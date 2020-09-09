@@ -4,9 +4,25 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('product', {
-    name: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false, 
+    },
+    images: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: false,
+    }
   });
 };
