@@ -22,17 +22,19 @@ export default class formAddProduct extends React.Component {
     handleChange(e) {
         this.setState({[e.target.name]: e.target.value})
     }
-    onSubmit(product) {
-      // if(!product.title || !product.categories || !product.price || !product.quantity || !product.description) {
+    onSubmit(e) {
+      e.preventDefault(); 
+      // if(!title || !categories || !product.price || !product.quantity || !product.description) {
       //   return alert("Todos los campos deben estar completos")
       // }
       // else {
         var url = `http://localhost:3001/products`;
         var data =  {
-        title: product.title,
-        categories: product.categories, 
-        price: product.price,
-        quantity: product.quantity
+        title: this.state.title,
+        categories: this.state.categories, 
+        price: this.state.price,
+        quantity: this.state.quantity,
+        description: this.state.description
         };
         fetch(url, {
         method: 'POST', 
@@ -42,7 +44,9 @@ export default class formAddProduct extends React.Component {
         }
         })
         .then(res => res.json())
-        .then(()=>alert("El formulario ha sido enviado exitosamente"))
+        .then((product)=> {
+          alert("El formulario ha sido enviado exitosamente")
+        console.log(product) })
         .catch(error => console.error('Error:', error))
        
         this.setState ({ 
