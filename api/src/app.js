@@ -56,7 +56,8 @@ server.get('/', (req, res) => {
         headers: { 'Content-Type': 'application/json' },
     })
     .then(res => res.json())
-    .then(json => console.log(json));
+    .then(jsonToken => console.log(jsonToken));
+    // esse jsonToken es el objetito que contiene con el token 
   }
   res.send(req.query.code)
 });
