@@ -16,15 +16,16 @@ server.get('/', (req, res) => {
 });
 
 server.post('/', (req, res) => {
-	const { title, price, quantity, categories} = req.body;
-	if(!title || !price || !quantity || categories.length === 0){
+	const { title, price, quantity, description, categories} = req.body;
+	if(!title || !price || !quantity){
 		return res.status(422).json({ error: "No se enviaron todos los datos"});
 	}
 
 	Product.create({
 		title,
 		price,
-		quantity
+		quantity,
+		description
 	})
 	.then( product => {
 		product.setCategories(categories)
