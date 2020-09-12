@@ -16,7 +16,7 @@ server.get('/', (req, res) => {
 });
 
 server.post('/', (req, res) => {
-	const { title, price, quantity} = req.body;
+	const { title, price, quantity, description, categories} = req.body;
 	if(!title || !price || !quantity){
 		return res.status(422).json({ error: "No se enviaron todos los datos"});
 	}
@@ -24,10 +24,11 @@ server.post('/', (req, res) => {
 	Product.create({
 		title,
 		price,
-		quantity
+		quantity,
+		description
 	})
 	.then( product => {
-		product.setCategories([1])
+		product.setCategories(categories)
 		.then(() => res.status(201).send(product))
 	})
 	.catch( err => res.status(500).json({ error: "No se pudo crear el producto"}))
