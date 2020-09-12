@@ -4,6 +4,11 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define('category', {
+    idMl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
