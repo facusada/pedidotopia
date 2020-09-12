@@ -12,8 +12,6 @@ server.get('/', (req, res) => {
 				idML: category.id,
 				name: category.name
 			})
-			.then( res => console.log('res es: '+res))
-			.catch( err => console.log('err es: '+err))
 			)
 	})
 	.catch( err => console.log(err))
