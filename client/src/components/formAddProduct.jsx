@@ -8,15 +8,17 @@ export default class formAddProduct extends React.Component {
         super(props);
         this.state = {
             title: "",
-            categories: "",
+            categories: [],
             price: "",
             quantity: "",
             description: "",
-            imagenes: []
+            imagenes: [],
+            categoriesML: []
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
     }
 
     handleChange(e) {
@@ -28,7 +30,7 @@ export default class formAddProduct extends React.Component {
       //   return alert("Todos los campos deben estar completos")
       // }
       // else {
-        var url = `http://localhost:3001/products`;
+        var url = `http://localhost:3000/products`;
         var data =  {
         title: this.state.title,
         categories: this.state.categories, 
@@ -58,6 +60,27 @@ export default class formAddProduct extends React.Component {
         })
       }
   //}
+
+  componentDidMount() {
+    //e.preventDefault();
+    var url = `http://localhost:3000/categories`
+    fetch(url, {
+      method: 'GET',
+    })
+    .then(res => res.json())
+    .then((categorias) => {
+      this.setState({categoriesML: categorias})
+    })
+    .catch(error => console.error('Error:', error))
+  }
+
+   handleSelect = (e) => {
+    const categories = Array.from(e.target.selectedOptions).map(
+      (category) => category.value
+    )
+      this.setState({categories: categories})
+    }
+
 
     render () { 
     return( 
@@ -121,9 +144,32 @@ export default class formAddProduct extends React.Component {
               onChange = {this.handleChange}
               /> <br/> <br/>
 
+           <label> seleccione una categoria: </label>
+            <div>
+              <select
+                multiple
+                className='form-control'
+                name='categories'
+                onChange={this.handleSelect}
+                value={this.state.categories}
+                size = {5}
+              >
+              
+              { 
+               this.state.categoriesML.map(c => 
+                <option key={c.id} value={c.id}>{c.name}</option>
+                )	
+              }	
+              </select>
+            </div>
+
               <Button variant="contained" color="primary" onClick={this.onSubmit} >
                 Enviar
               </Button>
+
+              {/* <Button variant="contained" color="primary" onClick={this.categorias} >
+                TRAER CATEGORIAS
+              </Button> */}
 
           </React.Fragment>
     )}
