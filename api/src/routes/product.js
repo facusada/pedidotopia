@@ -9,7 +9,7 @@ server.get('/', (req, res) => {
 		return res.status(200).send(products)})
 	.catch( err => {
 		return res.status(500).json({ 
-			error: "No se pudiero obtener los productos",
+			error: "No se pudieron obtener los productos",
 			message: err
 		})
 	});
