@@ -26,10 +26,6 @@ export default class formAddProduct extends React.Component {
     }
     onSubmit(e) {
       e.preventDefault(); 
-      // if(!title || !categories || !product.price || !product.quantity || !product.description) {
-      //   return alert("Todos los campos deben estar completos")
-      // }
-      // else {
         var url = `http://localhost:3000/products`;
         var data =  {
         title: this.state.title,
@@ -59,10 +55,8 @@ export default class formAddProduct extends React.Component {
           description: "",
         })
       }
-  //}
 
   componentDidMount() {
-    //e.preventDefault();
     var url = `http://localhost:3000/categories`
     fetch(url, {
       method: 'GET',
@@ -99,6 +93,7 @@ export default class formAddProduct extends React.Component {
               <TextField 
               required                    
               id="outlined-basic" 
+              disabled id="standard-disabled"
               label="Categoría" 
               variant="outlined" 
               name= "categories"
@@ -144,7 +139,7 @@ export default class formAddProduct extends React.Component {
               onChange = {this.handleChange}
               /> <br/> <br/>
 
-           <label> seleccione una categoria: </label>
+           <label> Seleccione una categoria: </label>
             <div>
               <select
                 multiple
@@ -161,15 +156,11 @@ export default class formAddProduct extends React.Component {
                 )	
               }	
               </select>
-            </div>
+            </div> <br/>
 
               <Button variant="contained" color="primary" onClick={this.onSubmit} >
                 Enviar
-              </Button>
-
-              {/* <Button variant="contained" color="primary" onClick={this.categorias} >
-                TRAER CATEGORIAS
-              </Button> */}
+              </Button> 
 
           </React.Fragment>
     )}
