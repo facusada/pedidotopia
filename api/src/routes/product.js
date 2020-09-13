@@ -6,12 +6,12 @@ server.get('/', (req, res) => {
 		include: [Category],
 	})
 	.then(products => {
-		console.log('products es: '+ JSON.stringify(products))
 		return res.status(200).send(products)})
 	.catch( err => {
-		console.log('el err es: '+ err)
-		return res.status(500).json({ error: "No se pudiero obtener los productos",
-		message: err})
+		return res.status(500).json({ 
+			error: "No se pudiero obtener los productos",
+			message: err
+		})
 	});
 });
 
