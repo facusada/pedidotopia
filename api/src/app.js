@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
 const fetch = require('node-fetch');
+const multer = require('multer')
+const path = require('path')
+const { v4: uuidv4 } = require('uuid')
 
 require('./db.js');
 
@@ -29,6 +32,30 @@ server.use((req, res, next) => {
 	next()
 })
 
+// middlewares con Multer
+const storage = multer.diskStorage({
+	destination: path.join(__dirname, '../public/images'),
+	filename: (req, file, cb) => {
+		cb(null, uuidv4() + path.extname(file.originalname).toLowerCase())
+	},
+})
+
+const upload = multer({
+	storage,
+	limits: { fileSize: 2000000 },
+	fileFilter: (req, file, cb) => {
+		const fileTypes = /jpeg|jpg|png|PNG/
+		const mimeType = fileTypes.test(file.mimetype)
+		const extName = fileTypes.test(path.extname(file.originalname))
+		if (mimeType && extName) {
+			return cb(null, true)
+		}
+		cb('Error: debe subir un archivo valido')
+	},
+}).single('images')
+
+server.use(upload)
+
 server.use('/', routes);
 
 // Error catching endware.
@@ -38,6 +65,9 @@ server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   console.error(err);
   res.status(status).send(message);
 });
+
+// Static files
+server.use(express.static(path.join(__dirname, '../public')))
 
 server.get('/', (req, res) => {
   const code = req.query.code;

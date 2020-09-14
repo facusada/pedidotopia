@@ -8,7 +8,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/styles';
 
- 
+const image = {
+  maxWidth: '50px',
+  width: '100%',
+}
+
 const styles = theme => ({
     table: {
       minWidth: 650,
@@ -19,7 +23,7 @@ const styles = theme => ({
     constructor(props) {
         super(props);
         this.state = {
-            prod: ""
+            prod: []
         }
     }
 
@@ -48,11 +52,12 @@ const styles = theme => ({
                     <TableCell align="right">Precio</TableCell>
                     <TableCell align="right">Cantidad</TableCell>
                     <TableCell align="right">Descripción</TableCell>
+                    <TableCell align="right">Image</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/* {productos.map((p) => (
-                    <TableRow key={p.name}>
+                  {this.state.prod && this.state.prod.map((p) => (
+                    <TableRow key={p.id}>
                       <TableCell component="th" scope="row">
                         {p.id}
                       </TableCell>
@@ -60,8 +65,12 @@ const styles = theme => ({
                       <TableCell align="right">{p.price}</TableCell>
                       <TableCell align="right">{p.quantity}</TableCell>
                       <TableCell align="right">{p.description}</TableCell>
+                      <TableCell align="right">
+                        
+                        <img src={`http://localhost:3000/images/${p.images}`} style={image}/>
+                      </TableCell>
                     </TableRow>
-                  ))} */}
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

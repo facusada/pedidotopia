@@ -20,9 +20,9 @@ module.exports = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: false, 
     },
-    // images: {
-    //   type: DataTypes.ARRAY(DataTypes.TEXT),
-    //   allowNull: false,
-    // }
+    images: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    }
   });
 };
