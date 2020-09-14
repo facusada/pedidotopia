@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
-import { AppBar, Toolbar, Typography, makeStyles, IconButton, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, makeStyles, IconButton, Button, Link } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -21,7 +20,12 @@ export default function NavBar() {
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
       };
+
+    const handleClose = () => {
+    setAnchorEl(null);
+    };
  
+
       return (
         <AppBar position="static">
             <Toolbar>
@@ -38,12 +42,8 @@ export default function NavBar() {
                     open={open}
                     onClose={handleClose}
                 >
-                    <Link to='/addProduct'>
-                        <MenuItem >Agregar Producto</MenuItem>
-                    </Link>
-                    <Link to='/list'>
-                        <MenuItem >Lista de Productos</MenuItem>   
-                    </Link>
+                    <MenuItem onClick={handleClose}>Agregar Producto</MenuItem>
+                    <MenuItem onClick={handleClose}>Lista de Productos</MenuItem>   
                 </Menu>
             </IconButton>
             </div>
