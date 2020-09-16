@@ -57,7 +57,7 @@ const upload = multer({
 		}
 		cb('Error: debe subir un archivo valido')
 	},
-}).single('images')
+}).array('file')
 
 server.use(upload)
 
@@ -80,8 +80,8 @@ server.get('/', (req, res) => {
   if(code){
     const body = {
       grant_type : 'authorization_code', 
-      client_id : '113260628172730',
-      client_secret : 'nzmh851u4ciGGDOdJBdemTyt5Cvtysay',
+      client_id : '2319781659457528',
+      client_secret : 'h0B0WpaJevSc0RZoGxbzpXRTSGNQ6336',
       code : code,
       redirect_uri:'http://localhost:3000'
     }
