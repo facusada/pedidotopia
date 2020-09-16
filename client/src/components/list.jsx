@@ -23,7 +23,8 @@ const styles = theme => ({
     constructor(props) {
         super(props);
         this.state = {
-            prod: []
+            prod: [],
+            prodML: []
         }
     }
 
@@ -38,8 +39,20 @@ const styles = theme => ({
           this.setState({prod:productos})
         })
         .catch(error => console.error('Error:', error))
+
+        var url = `https://api.mercadolibre.com/users/67495033/items/search?access_token=APP_USR-2326379537505729-091616-141a2cae9a785e4aea898288735c7033-640321140`
+        fetch(url, {
+          method: 'GET',
+        }) 
+        .then(res => res.json())
+        console.log(url)
+        .then(productos => {
+          console.log(productos)
+          this.setState({prodML: productos})
+        }) 
+        .catch(error => console.log('Error:', error))
         }
-    
+
     render(){
         const { classes } = this.props;
         return (
@@ -53,6 +66,8 @@ const styles = theme => ({
                     <TableCell align="right">Cantidad</TableCell>
                     <TableCell align="right">Descripción</TableCell>
                     <TableCell align="right">Image</TableCell>
+                    <TableCell align="right">Api Local</TableCell>
+                    {/* <TableCell align="right">Api ML</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -64,18 +79,32 @@ const styles = theme => ({
                       <TableCell align="right">{p.title}</TableCell>
                       <TableCell align="right">{p.price}</TableCell>
                       <TableCell align="right">{p.quantity}</TableCell>
-                      <TableCell align="right">{p.description}</TableCell>
+                      <TableCell align="right">{p.descriptions}</TableCell>
                       <TableCell align="right">
-                        
                         <img src={`http://localhost:3000/images/${p.images}`} style={image}/>
                       </TableCell>
+                      <TableCell>Si</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
+                      ))}
+                      {this.state.prodML && this.state.prodML.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell component="th" scope="row">
+                        {p.id}
+                      </TableCell>
+                      <TableCell align="right">{p.title}</TableCell>
+                      <TableCell align="right">{p.price}</TableCell>
+                      <TableCell align="right">{p.available_quantity}</TableCell>
+                      <TableCell align="right">-</TableCell>
+                      <TableCell align="right">
+                        <img src={p.pictures[0].source} style={image}/>
+                      </TableCell>
+                      <TableCell>No</TableCell>
+                    </TableRow>
+                      ))}
+                  </TableBody>
               </Table>
             </TableContainer>
-          )
-    }
+        )}
 }
 
 export default withStyles(styles, { withTheme: true })(SimpleTable);
