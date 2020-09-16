@@ -25,9 +25,9 @@ export default class formAddProduct extends React.Component {
   }
 
   handleChange(e) {
-      this.setState({[e.target.name]: e.target.value})
+    this.setState({[e.target.name]: e.target.value})
   }
-
+  
   handleChangeImage = (e) => {
     this.setState({imgs: e.target.files})
   }
@@ -35,27 +35,18 @@ export default class formAddProduct extends React.Component {
   handleSubmitImage = (e) => {
     e.preventDefault()
     const formImage = new FormData()
-    for (let i = 0; i < this.state.imgs.length; i++) {
-			formImage.append('images', this.state.imgs[i])
-		}
-		fetch(`http://localhost:3000/images`, {
-			method: 'POST',
-			credentials: 'include',
-			body: formImage,
-		})
-			.then((res) => res.json())
-			.then((data) => {
-        console.log('se subio la imagen '+ data)
-				this.setState({images: data})
-				// setnoSubido(false);
-				// setCreado(true);
-				// setTimeout(()=> {
-				// 	setCreado(false);
-				// }, 5000)
+      formImage.append('file', this.state.imgs[0])
+		
+      fetch( 'https://api.mercadolibre.com/pictures/items/upload?access_token=APP_USR-625401119093695-091609-b5237289c816a035d8d660134b6a69f5-174509496', {
+        method: 'post',
+        body: formImage,
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('se subio la imagen '+ JSON.stringify(data.variations[0]))
+				this.setState({image: data.variations[0].url})
 			})
 			.catch( err => { console.log('error imagen '+ err)
-				// setCreado(false);
-				// setnoSubido(true);
 			})
   }
 
@@ -68,7 +59,7 @@ export default class formAddProduct extends React.Component {
         price: this.state.price,
         quantity: this.state.quantity,
         description: this.state.description,
-        images: this.state.images
+        images: this.state.image
       };
       fetch(url, {
       method: 'POST', 
@@ -128,7 +119,7 @@ export default class formAddProduct extends React.Component {
         onChange = {this.handleChange}
         /> <br/> <br/>
 
-        <TextField 
+        {/* <TextField 
         required                    
         id="outlined-basic" 
         disabled id="standard-disabled"
@@ -137,7 +128,7 @@ export default class formAddProduct extends React.Component {
         name= "categories"
         value={this.state.categories} 
         onChange = {this.handleChange}
-        /> <br/> <br/>
+        /> <br/> <br/> */}
 
         <TextField
         id="outlined-number"
@@ -204,7 +195,7 @@ export default class formAddProduct extends React.Component {
           </div>
         </div>
 
-        <label> Seleccione una categoria: </label>
+        {/* <label> Seleccione una categoria: </label>
         <div>
           <select
             multiple
@@ -221,7 +212,7 @@ export default class formAddProduct extends React.Component {
             )	
           }	
           </select>
-        </div> <br/>
+        </div> <br/> */}
 
         <Button variant="contained" color="primary" onClick={this.onSubmit} >
           Enviar

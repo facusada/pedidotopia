@@ -28,14 +28,13 @@ const styles = theme => ({
     }
 
     componentDidMount() { 
-        var url = `http://localhost:3000/products`
+        var url = `https://api.mercadolibre.com/sites/MLA/search?nickname=BRUNODIONELVICENTE`
         fetch(url, {
           method: 'GET',
         })
         .then(res => res.json())
         .then((productos) => {
-            console.log(productos)
-          this.setState({prod:productos})
+          this.setState({prod:productos.results})
         })
         .catch(error => console.error('Error:', error))
         }
@@ -47,7 +46,7 @@ const styles = theme => ({
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>ID</TableCell>
+                    <TableCell>Link</TableCell>
                     <TableCell align="right">Nombre</TableCell>
                     <TableCell align="right">Precio</TableCell>
                     <TableCell align="right">Cantidad</TableCell>
@@ -59,15 +58,15 @@ const styles = theme => ({
                   {this.state.prod && this.state.prod.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell component="th" scope="row">
-                        {p.id}
+                        <a href={p.permalink} target="blank">Ver articulo</a>
                       </TableCell>
                       <TableCell align="right">{p.title}</TableCell>
                       <TableCell align="right">{p.price}</TableCell>
-                      <TableCell align="right">{p.quantity}</TableCell>
+                      <TableCell align="right">{p.available_quantity}</TableCell>
                       <TableCell align="right">{p.description}</TableCell>
                       <TableCell align="right">
                         
-                        <img src={`http://localhost:3000/images/${p.images}`} style={image}/>
+                        <img src={p.thumbnail} style={image} alt=""/>
                       </TableCell>
                     </TableRow>
                   ))}
