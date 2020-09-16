@@ -7,6 +7,7 @@ const fetch = require('node-fetch');
 const multer = require('multer')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
+var meli = require('mercadolibre');
 
 require('./db.js');
 
@@ -31,6 +32,10 @@ server.use((req, res, next) => {
 	)
 	next()
 })
+
+
+var meliObject = new meli.Meli('2319781659457528', 'h0B0WpaJevSc0RZoGxbzpXRTSGNQ6336');
+
 
 // middlewares con Multer
 const storage = multer.diskStorage({
@@ -92,4 +97,7 @@ server.get('/', (req, res) => {
   res.send(req.query.code)
 });
 
-module.exports = server;
+module.exports = {
+	server,
+	meliObject
+ };
