@@ -97,6 +97,27 @@ server.get('/', (req, res) => {
   res.send(req.query.code)
 });
 
+server.get('/', (req, res) => {
+  const access_token = req.body.access_token;
+  
+  if(access_token){
+    const body = {
+      grant_type : 'refresh_token', 
+      client_id : '2319781659457528',
+      client_secret : 'h0B0WpaJevSc0RZoGxbzpXRTSGNQ6336',
+      refresh_token:'TG-5f62b6bcd5d09c0007f3d240-640321140'
+    }
+    fetch('https://api.mercadolibre.com/oauth/token', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+    })
+    .then(res => res.json())
+    .then(jsonToken => console.log(jsonToken));
+  }
+  res.send(req.body.access_token)
+});
+
 module.exports = {
 	server,
 	meliObject
