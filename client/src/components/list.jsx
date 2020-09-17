@@ -24,7 +24,8 @@ const styles = theme => ({
     constructor(props) {
         super(props);
         this.state = {
-            prod: []
+            prod: [],
+            prodML: []
         }
 
         this.update = this.update.bind(this);
@@ -41,8 +42,21 @@ const styles = theme => ({
           this.setState({prod:productos.results})
         })
         .catch(error => console.error('Error:', error))
+
+        var url = `https://api.mercadolibre.com/users/67495033/items/search?access_token=APP_USR-2326379537505729-091616-141a2cae9a785e4aea898288735c7033-640321140`
+        fetch(url, {
+          method: 'GET',
+        }) 
+        .then(res => res.json())
+        console.log(url)
+        .then(productos => {
+          console.log(productos)
+          this.setState({prodML: productos})
+        }) 
+        .catch(error => console.log('Error:', error))
         }
 
+   
     update() {}
     delete(id) {
       fetch(`http://localhost:3000/products/${id}`, {
@@ -60,6 +74,7 @@ const styles = theme => ({
 
     }
     
+   
     render(){
         const { classes } = this.props;
         return (
@@ -74,6 +89,7 @@ const styles = theme => ({
                     <TableCell align="center">Cantidad</TableCell>
                     <TableCell align="center">Descripción</TableCell>
                     <TableCell align="center">Image</TableCell>
+                    <TableCell align="right">Api Local</TableCell>
                     <TableCell align="center">Modificar</TableCell>
                     <TableCell align="center">Borrar</TableCell>
                   </TableRow>
@@ -88,10 +104,36 @@ const styles = theme => ({
                       <TableCell align="center">{p.title}</TableCell>
                       <TableCell align="center">{p.price}</TableCell>
                       <TableCell align="center">{p.available_quantity}</TableCell>
-                      <TableCell align="center">{p.description}</TableCell>
-                      <TableCell align="center">                   
+                      <TableCell align="center">{p.descriptions}</TableCell>
+                      <TableCell align="center">
                         <img src={p.thumbnail} style={image} alt=""/>
                       </TableCell>
+                      <TableCell>Si</TableCell>
+                      <TableCell align="center"> 
+                        <Button variant="contained" size="small" color="primary">
+                          Modificar
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center"> 
+                        <Button variant="contained" size="small" color="secondary">
+                          Borrar
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                      ))}
+                      {this.state.prodML && this.state.prodML.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell component="th" scope="row">
+                        {p.id}
+                      </TableCell>
+                      <TableCell align="right">{p.title}</TableCell>
+                      <TableCell align="right">{p.price}</TableCell>
+                      <TableCell align="right">{p.available_quantity}</TableCell>
+                      <TableCell align="right">-</TableCell>
+                      <TableCell align="right">
+                        <img src={p.pictures[0].source} style={image}/>
+                      </TableCell>
+                      <TableCell>No</TableCell>
                       <TableCell align="center"> 
                         <Button variant="contained" size="small" color="primary" onClick={this.update} >
                           Modificar
@@ -103,12 +145,11 @@ const styles = theme => ({
                         </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
+                      ))}
+                  </TableBody>
               </Table>
             </TableContainer>
-          )
-    }
+        )}
 }
 
 export default withStyles(styles, { withTheme: true })(SimpleTable);
