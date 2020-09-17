@@ -95,4 +95,20 @@ server.post('/', (req, res) => {
 
 })
 
+server.delete('/:id', (req, res) => {
+	const { id } = req.params;
+	console.log(id)
+	fetch(`https://api.mercadolibre.com/items/${id}?access_token=APP_USR-2319781659457528-091700-eda818dacdee0c0d9644ef026f75e46d-67495033`, {
+        method: 'PUT',
+        header: {
+		  "Content-Type": "application/json", "Accept": "application/json" },
+		body: JSON.stringify({"status": "closed"}),
+    })
+	.then(res => res.json())
+	.then((respuesta) => {
+	console.log(respuesta)
+	})
+	.catch(error => console.error('Error:', error))
+})
+
 module.exports = server;

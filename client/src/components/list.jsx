@@ -26,6 +26,9 @@ const styles = theme => ({
         this.state = {
             prod: []
         }
+
+        this.update = this.update.bind(this);
+        this.delete = this.delete.bind(this);
     }
 
     componentDidMount() { 
@@ -39,6 +42,23 @@ const styles = theme => ({
         })
         .catch(error => console.error('Error:', error))
         }
+
+    update() {}
+    delete(id) {
+      fetch(`http://localhost:3000/products/${id}`, {
+        method: 'DELETE',
+        // body: {
+        //   id: id,
+        //   status: "closed"
+        // }
+      })
+      .then(res => res.json())
+      .then((respuesta) => {
+        console.log(respuesta)
+        alert("El producto ha sido borrado exitosamente")
+      }) 
+
+    }
     
     render(){
         const { classes } = this.props;
@@ -48,6 +68,7 @@ const styles = theme => ({
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">Link</TableCell>
+                    <TableCell align="center">Id</TableCell>
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Precio</TableCell>
                     <TableCell align="center">Cantidad</TableCell>
@@ -63,6 +84,7 @@ const styles = theme => ({
                       <TableCell component="th" scope="row" align="center">
                         <a href={p.permalink} target="blank">Ver articulo</a>
                       </TableCell>
+                      <TableCell align="center">{p.id}</TableCell>
                       <TableCell align="center">{p.title}</TableCell>
                       <TableCell align="center">{p.price}</TableCell>
                       <TableCell align="center">{p.available_quantity}</TableCell>
@@ -71,12 +93,12 @@ const styles = theme => ({
                         <img src={p.thumbnail} style={image} alt=""/>
                       </TableCell>
                       <TableCell align="center"> 
-                        <Button variant="contained" size="small" color="primary">
+                        <Button variant="contained" size="small" color="primary" onClick={this.update} >
                           Modificar
                         </Button>
                       </TableCell>
                       <TableCell align="center"> 
-                        <Button variant="contained" size="small" color="secondary">
+                        <Button variant="contained" size="small" color="secondary" onClick={() => this.delete(p.id)} >
                           Borrar
                         </Button>
                       </TableCell>
