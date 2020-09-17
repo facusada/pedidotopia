@@ -22,7 +22,7 @@ function App() {
       component={List}
       />
       <Route
-      exact path='/product/modificar'
+      exact path='/product/modificar/:id'
       component={Modificar}
       />
     </div>

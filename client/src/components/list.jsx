@@ -7,7 +7,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/styles';
-import { Button, Link } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import { Link } from 'react-router-dom'
+
 
 const image = {
   maxWidth: '50px',
@@ -27,12 +29,11 @@ const styles = theme => ({
             prod: []
         }
 
-        this.update = this.update.bind(this);
         this.delete = this.delete.bind(this);
     }
 
     componentDidMount() { 
-        var url = `https://api.mercadolibre.com/sites/MLA/search?seller_id=67495033`
+        var url = `https://api.mercadolibre.com/sites/MLA/search?seller_id=174509496`
         fetch(url, {
           method: 'GET',
         })
@@ -41,9 +42,7 @@ const styles = theme => ({
           this.setState({prod:productos.results})
         })
         .catch(error => console.error('Error:', error))
-        }
-
-    update() {}
+      }
 
     delete(id) {
       fetch(`http://localhost:3000/product/${id}`, {
@@ -90,8 +89,8 @@ const styles = theme => ({
                         <img src={p.thumbnail} style={image} alt=""/>
                       </TableCell>
                       <TableCell align="center"> 
-                        <Link to='/product/modificar'> 
-                          <Button variant="contained" size="small" color="primary" onClick={this.update} >
+                        <Link to={`/product/modificar/${p.id}`}> 
+                          <Button variant="contained" size="small" color="primary" >
                             Modificar
                           </Button>
                         </Link>
