@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import Form from './components/formAddProduct';
 import NavBar from './components/NavBar';
 import List from './components/list';
+import Modificar from './components/formModificarProduct';
 
 function App() {
   return (
@@ -19,6 +20,10 @@ function App() {
       <Route
       exact path='/list'
       component={List}
+      />
+      <Route
+      exact path='/product/modificar'
+      component={Modificar}
       />
     </div>
   );
