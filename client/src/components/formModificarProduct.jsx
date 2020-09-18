@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormControl, InputLabel, Input, Button } from '@material-ui/core';
 import styles from './formModificar.module.css'
+import token from '../variables'
 export default class modificarProducto extends React.Component {
     constructor(props) {
         super(props);
@@ -11,7 +12,6 @@ export default class modificarProducto extends React.Component {
             titulo: "",
             imagen: "",
             descripcion: "",
-            condicion: "",
             idProduct: match.params.id,
         }
 
@@ -20,18 +20,21 @@ export default class modificarProducto extends React.Component {
         this.handleChangeImage = this.handleChangeImage.bind(this)
     }
     componentDidMount(){
+        console.log('en form produt modificar: '+token)
         console.log(this.state.idProduct)
-        fetch(`https://api.mercadolibre.com/items?ids=${this.state.idProduct}`)
+        fetch(`http://localhost:3000/products/${this.state.idProduct}`)
+        // fetch(`https://api.mercadolibre.com/items?ids=${this.state.idProduct}`)
         .then(res => res.json())
         .then(res => {
+            console.log('lo que viene desde la db al buscar por id: '+ JSON.stringify(res))
             // console.log('response es:'+ JSON.stringify(res[0].body))
-            console.log(res[0].body.thumbnail)
+            // console.log(res[0].body.thumbnail)
             this.setState( {
-                cantidad : res[0].body.available_quantity,
-                precio : res[0].body.price,
-                titulo : res[0].body.title,
-                condicion : res[0].body.attributes[0].value_name,
-                imagen : res[0].body.thumbnail,
+                cantidad : res.quantity,
+                precio : res.price,
+                titulo : res.title,
+                descripcion : res.description,
+                imagen : res.images,
                 // envio : res[0].body,
                 imgs: []
             } )
@@ -49,7 +52,7 @@ export default class modificarProducto extends React.Component {
       const formImage = new FormData()
       formImage.append('file', e.target.files[0])
 		
-      fetch( 'https://api.mercadolibre.com/pictures/items/upload?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496', {
+      fetch( `https://api.mercadolibre.com/pictures/items/upload?access_token=${token}`, {
         method: 'post',
         body: formImage,
       })
@@ -61,22 +64,22 @@ export default class modificarProducto extends React.Component {
 			.catch( err => { console.log('error imagen '+ err)
 			})
     }
+    
     onSubmit() {
         var data = {
             available_quantity: this.state.cantidad,
             price: this.state.precio,
             title: this.state.titulo,
-            condition: this.state.condicion
+            descripcion: this.state.descripcion
         }
 
-        console.log('el adat que voy a enviar es: '+JSON.stringify(data))
-        fetch(`https://api.mercadolibre.com/items/${this.state.idProduct}?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496`,{
+        fetch(`http://localhost:3000/products/${this.state.idProduct}/modificar`,{
             method: 'put',
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            body: data
+            body: JSON.stringify(data)
         })
         .then(res => res.json())
         .then((respuesta) => {
@@ -86,7 +89,8 @@ export default class modificarProducto extends React.Component {
       .catch(err => console.log('modificar sale por el catch '+ err))
       
       if(this.state.imagen !== ""){
-          fetch(`https://api.mercadolibre.com/items/{item_id}?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496`,{
+          fetch(`http://localhost:3000/products/picture/${this.state.idProduct}/modificar`)
+          fetch(`https://api.mercadolibre.com/items/{item_id}?access_token=${token}`,{
               method: 'PUT',
               body: {
                   pictures: { source: this.state.imagen}
@@ -139,9 +143,9 @@ export default class modificarProducto extends React.Component {
                 <img src={this.state.imagen} alt="imagen produ" className={styles.wrapperImage}/>
             </div>  
             <FormControl>
-                <InputLabel htmlFor="my-input">Condicion Producto</InputLabel>
+                <InputLabel htmlFor="my-input">Descripcion</InputLabel>
                 <Input id="my-input" aria-describedby="my-helper-text" name='condicion' 
-                onChange={this.handleChange} value={this.state.condicion}/>
+                onChange={this.handleChange} value={this.state.descripcion}/>
             </FormControl>  
         </FormControl>    <br/>  <br/>  
         <Button variant="contained" color="primary" onClick={this.onSubmit} value={this.state} >

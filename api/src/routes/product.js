@@ -1,11 +1,10 @@
 const server = require('express').Router();
 const { Product, Category } = require('../db.js');
 const fetch = require('node-fetch')
+const token = require('../../token/token.js')
 
 server.get('/', (req, res) => {
-	Product.findAll({
-		include: [Category],
-	})
+	Product.findAll()
 	.then(products => {
 		return res.status(200).send(products)})
 	.catch( err => {
@@ -17,7 +16,7 @@ server.get('/', (req, res) => {
 });
 
 server.post('/', (req, res) => {
-	const { title, price, quantity, description, categories, images} = req.body;
+	const { title, price, quantity, description, images} = req.body;
 	if(!title || !price || !quantity){
 		return res.status(422).json({ error: "No se enviaron todos los datos"});
 	}
@@ -65,68 +64,148 @@ server.post('/', (req, res) => {
 				  value_name: "M"
 			   }
 			]
-		 }
-		fetch('https://api.mercadolibre.com/items?access_token=APP_USR-625401119093695-091609-b5237289c816a035d8d660134b6a69f5-174509496',{
-			method: 'POST', 
-			body: JSON.stringify(data),
-			headers:{
-				'Content-Type': 'application/json'
-			}
-			})
-			.then(res => res.json())
-			.then((product)=> {
-				console.log(product) })
-			.catch(error => console.error('Error:', error))
+		}
+
+	   fetch(`https://api.mercadolibre.com/items?access_token=${token}`,{
+		method: 'POST', 
+		body: JSON.stringify(data)})
+		.then(res => res.json())
+		.then((response)=> {
+			// if(response.error){
+			// 	// res.status(401).send(response)
+			// } else {
+			console.log('se creo el producto: '+ JSON.stringify(response))
+
+			// Guardo el produto cerado en la api en mi db
+			console.log('a la db va con: '+ response.id, response.title, response.price, response.available_quantity,
+			description, images, response.permalink)
+
+			Product.create({
+					idML: response.id,
+					title: response.title,
+					price: response.price,
+					quantity: response.available_quantity,
+					description,
+					images,
+					linkMeli: response.permalink
+				})
+				.then( product => {
+					console.log('se ceral el producto en la db: '+ JSON.stringify(product))
+					res.status(201).send(product)
+					res.send(product)
+				})
+				.catch( err => res.status(502).json({ 
+					error: "No se pudo crear el producto"
+				}))
+
 		})
+		.catch(error => console.error('Error:', error))
+	})
 	.catch(err => console.log(err))
 
-	// Product.create({
-	// 	title,
-	// 	price,
-	// 	quantity,
-	// 	description,
-	// 	images,
-	// })
-	// .then( product => {
-	// 	product.setCategories(categories)
-	// 	.then(() => res.status(201).send(product))
-	// })
-	// .catch( err => res.status(500).json({ error: "No se pudo crear el producto"}))
+	
 
 })
 
 server.delete('/:id', (req, res) => {
 	const { id } = req.params;
-	console.log(id)
-	fetch(`https://api.mercadolibre.com/items/${id}?access_token=APP_USR-2319781659457528-091700-eda818dacdee0c0d9644ef026f75e46d-67495033`, {
-        method: 'PUT',
-        header: {
-		  "Content-Type": "application/json", "Accept": "application/json" },
-		body: JSON.stringify({"status": "closed"}),
-    })
-	.then(res => res.json())
-	.then((respuesta) => {
-	console.log(respuesta)
+	var idML = "";
+	
+	Product.findOne({ where: { id: req.params.id }})
+		.then((product) => {
+			if (!product) return ('Id no válido')
+			// console.log('product encontrado: '+ JSON.stringify(product))
+			idML = product.idML
+			product.destroy().then(() => {
+				// console.log('producto borrado db: '+ JSON.stringify(product))
+			})
+
+			// console.log('idML: '+idML)
+			// console.log('id: '+id)
+			fetch(`https://api.mercadolibre.com/items/${idML}?access_token=${token}`, {
+				method: 'PUT',
+				header: {
+				  "Content-Type": "application/json", "Accept": "application/json" },
+				body: JSON.stringify({"status": "closed"}),
+			})
+			.then(res => res.json())
+			.then((respuesta) => {
+				// console.log('la respuesta del delete en ml es: '+ JSON.stringify(respuesta))
+				res.send(respuesta)
+		    }) 
+		})
+	
+	.catch(error => {
+		console.error('Error:', error);
+		res.status(500).send(error)
 	})
-	.catch(error => console.error('Error:', error))
 })
 
 server.put('/:id/modificar', (req, res) => {
 	const { id } = req.params;
-	const { cantidad, precio, video, imagenes, descripcion, envio } = req.body;
-	fetch(`https://api.mercadolibre.com/items/${id}?access_token=APP_USR-2319781659457528-091700-eda818dacdee0c0d9644ef026f75e46d-67495033`, {
+	const { available_quantity, price, title, description } = req.body;
+	console.log('el id al ual le voy a hacer el put: '+ JSON.stringify(req.params.id))
+	console.log('el body al ual le voy a hacer el put: '+ JSON.stringify(req.body))
+	fetch(`https://api.mercadolibre.com/items/${id}?access_token=${token}`, {
 		method: 'PUT',
 		header: {
 			"Content-Type": "application/json", "Accept": "application/json"
 		},
 		body: JSON.stringify({
-			"cantidad": cantidad,
-			"precio" : precio,
-			"video" : video,
-			"imagenes" : imagenes,
-			"description" : descripcion,
-			"envio" : envio
+			available_quantity,
+            price,
+            title,
+            description
 		})
+	})
+
+	.then(res => res.json())
+	.then((respuesta) => {
+	console.log('la respuesta del modificare s: '+JSON.stringify(respuesta))
+		
+		Product.findOne({ where: { idML: respuesta.id }})
+		.then(product => {
+			if(!product){
+				res.status(404).send('No se encontro')
+			} else {
+				product.title = respuesta.title 
+				product.description = respuesta.description
+				product.price = respuesta.price
+				product.quantity = respuesta.quantity 
+				product.save().then(() => {
+					res.status(201).send(product)
+				})
+			}
+		})
+		// alert("El producto ha sido modificado exitosamente")
+	 }) 
+	.catch(err => console.log('modificar sale por el catch '+ err))
+})
+
+server.put('/picture/:id/modificar', (req, res) => {
+	const { id } = req.params;
+	const { pictures } = req.body;
+	fetch(`https://api.mercadolibre.com/items/{item_id}?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496`,{
+		method: 'PUT',
+		body: {
+			pictures:pictures
+		}
+	})
+	.then(res => res.json())
+	.then(res => {
+		console.log('se modifico la imagen'+ res)
+	})
+	.catch(err => console.log(err))
+})
+
+server.get('/:id', (req, res) => {
+	Product.findOne({ where: { idML: req.params.id }})
+	.then(product => {
+		if(!product){
+			res.status(404).send('No se encotro')
+		} else {
+			res.send(product)
+		}
 	})
 })
 
