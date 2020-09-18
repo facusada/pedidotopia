@@ -74,11 +74,11 @@ server.post('/', (req, res) => {
 			// if(response.error){
 			// 	// res.status(401).send(response)
 			// } else {
-			// console.log('se creo el producto: '+ JSON.stringify(response))
+			console.log('se creo el producto: '+ JSON.stringify(response))
 
 			// Guardo el produto cerado en la api en mi db
-			// console.log('a la db va con: '+ response.id, response.title, response.price, response.available_quantity,
-			// description, images, response.permalink)
+			console.log('a la db va con: '+ response.id, response.title, response.price, response.available_quantity,
+			description, images, response.permalink)
 
 			Product.create({
 					idML: response.id,
@@ -90,8 +90,8 @@ server.post('/', (req, res) => {
 					linkMeli: response.permalink
 				})
 				.then( product => {
-					// console.log('se ceral el producto en la db: '+ JSON.stringify(product))
-					// res.status(201).send(product)
+					console.log('se ceral el producto en la db: '+ JSON.stringify(product))
+					res.status(201).send(product)
 					res.send(product)
 				})
 				.catch( err => res.status(502).json({ 
@@ -143,8 +143,10 @@ server.delete('/:id', (req, res) => {
 
 server.put('/:id/modificar', (req, res) => {
 	const { id } = req.params;
-	const { available_quantity, price, title, condition } = req.body;
-	fetch(`https://api.mercadolibre.com/items/${id}?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496`, {
+	const { available_quantity, price, title, description } = req.body;
+	console.log('el id al ual le voy a hacer el put: '+ JSON.stringify(req.params.id))
+	console.log('el body al ual le voy a hacer el put: '+ JSON.stringify(req.body))
+	fetch(`https://api.mercadolibre.com/items/${id}?access_token=${token}`, {
 		method: 'PUT',
 		header: {
 			"Content-Type": "application/json", "Accept": "application/json"
@@ -153,13 +155,28 @@ server.put('/:id/modificar', (req, res) => {
 			available_quantity,
             price,
             title,
-            condition
+            description
 		})
 	})
 
 	.then(res => res.json())
 	.then((respuesta) => {
 	console.log('la respuesta del modificare s: '+JSON.stringify(respuesta))
+		
+		Product.findOne({ where: { idML: respuesta.id }})
+		.then(product => {
+			if(!product){
+				res.status(404).send('No se encontro')
+			} else {
+				product.title = respuesta.title 
+				product.description = respuesta.description
+				product.price = respuesta.price
+				product.quantity = respuesta.quantity 
+				product.save().then(() => {
+					res.status(201).send(product)
+				})
+			}
+		})
 		// alert("El producto ha sido modificado exitosamente")
 	 }) 
 	.catch(err => console.log('modificar sale por el catch '+ err))
@@ -181,5 +198,15 @@ server.put('/picture/:id/modificar', (req, res) => {
 	.catch(err => console.log(err))
 })
 
+server.get('/:id', (req, res) => {
+	Product.findOne({ where: { idML: req.params.id }})
+	.then(product => {
+		if(!product){
+			res.status(404).send('No se encotro')
+		} else {
+			res.send(product)
+		}
+	})
+})
 
 module.exports = server;

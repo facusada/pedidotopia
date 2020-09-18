@@ -12,7 +12,6 @@ export default class modificarProducto extends React.Component {
             titulo: "",
             imagen: "",
             descripcion: "",
-            condicion: "",
             idProduct: match.params.id,
         }
 
@@ -23,17 +22,19 @@ export default class modificarProducto extends React.Component {
     componentDidMount(){
         console.log('en form produt modificar: '+token)
         console.log(this.state.idProduct)
-        fetch(`https://api.mercadolibre.com/items?ids=${this.state.idProduct}`)
+        fetch(`http://localhost:3000/products/${this.state.idProduct}`)
+        // fetch(`https://api.mercadolibre.com/items?ids=${this.state.idProduct}`)
         .then(res => res.json())
         .then(res => {
+            console.log('lo que viene desde la db al buscar por id: '+ JSON.stringify(res))
             // console.log('response es:'+ JSON.stringify(res[0].body))
-            console.log(res[0].body.thumbnail)
+            // console.log(res[0].body.thumbnail)
             this.setState( {
-                cantidad : res[0].body.available_quantity,
-                precio : res[0].body.price,
-                titulo : res[0].body.title,
-                condicion : res[0].body.attributes[0].value_name,
-                imagen : res[0].body.thumbnail,
+                cantidad : res.quantity,
+                precio : res.price,
+                titulo : res.title,
+                descripcion : res.description,
+                imagen : res.images,
                 // envio : res[0].body,
                 imgs: []
             } )
@@ -69,7 +70,7 @@ export default class modificarProducto extends React.Component {
             available_quantity: this.state.cantidad,
             price: this.state.precio,
             title: this.state.titulo,
-            condition: this.state.condicion
+            descripcion: this.state.descripcion
         }
 
         fetch(`http://localhost:3000/products/${this.state.idProduct}/modificar`,{
@@ -142,9 +143,9 @@ export default class modificarProducto extends React.Component {
                 <img src={this.state.imagen} alt="imagen produ" className={styles.wrapperImage}/>
             </div>  
             <FormControl>
-                <InputLabel htmlFor="my-input">Condicion Producto</InputLabel>
+                <InputLabel htmlFor="my-input">Descripcion</InputLabel>
                 <Input id="my-input" aria-describedby="my-helper-text" name='condicion' 
-                onChange={this.handleChange} value={this.state.condicion}/>
+                onChange={this.handleChange} value={this.state.descripcion}/>
             </FormControl>  
         </FormControl>    <br/>  <br/>  
         <Button variant="contained" color="primary" onClick={this.onSubmit} value={this.state} >

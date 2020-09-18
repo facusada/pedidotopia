@@ -106,7 +106,7 @@ const styles = theme => ({
                       <img src={p.images} style={image} alt=""/>
                     </TableCell>
                     <TableCell align="center"> 
-                      <Link to={`/product/modificar/${p.id}`}> 
+                      <Link to={`/product/modificar/${p.idML}`}> 
                         <Button variant="contained" size="small" color="primary" >
                           Modificar
                         </Button>
