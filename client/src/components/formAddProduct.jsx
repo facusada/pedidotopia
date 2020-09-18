@@ -1,19 +1,17 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import { Button } from '@material-ui/core';
-
+import token from '../variables'
 
 export default class formAddProduct extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       title: "",
-      categories: [],
       price: "",
       quantity: "",
       description: "",
       image: "",
-      categoriesML: [],
       imgs: []
     }
 
@@ -37,7 +35,7 @@ export default class formAddProduct extends React.Component {
     const formImage = new FormData()
       formImage.append('file', this.state.imgs[0])
 		
-      fetch( 'https://api.mercadolibre.com/pictures/items/upload?access_token=APP_USR-625401119093695-091609-b5237289c816a035d8d660134b6a69f5-174509496', {
+      fetch( `https://api.mercadolibre.com/pictures/items/upload?access_token=${token}`, {
         method: 'post',
         body: formImage,
       })
@@ -46,7 +44,9 @@ export default class formAddProduct extends React.Component {
         console.log('se subio la imagen '+ JSON.stringify(data.variations[0]))
 				this.setState({image: data.variations[0].url})
 			})
-			.catch( err => { console.log('error imagen '+ err)
+			.catch( err => { 
+        console.log('error imagen '+ err)
+        alert('No se pudo subir la imagen!')
 			})
   }
 
@@ -55,7 +55,6 @@ export default class formAddProduct extends React.Component {
       var url = `http://localhost:3000/products`;
       var data =  {
         title: this.state.title,
-        categories: this.state.categories, 
         price: this.state.price,
         quantity: this.state.quantity,
         description: this.state.description,
@@ -70,10 +69,15 @@ export default class formAddProduct extends React.Component {
       })
       .then(res => res.json())
       .then((product)=> {
-
-        alert("El formulario ha sido enviado exitosamente")
-      console.log(product) })
-      .catch(error => console.error('Error:', error))
+        console.log('respuesta al crear producto: '+ JSON.stringify(product))
+        if(product.id){
+          alert("El formulario ha sido enviado exitosamente")
+        }
+      })
+      .catch(error => {
+        alert('Error al crear el producto')
+        console.error('Error:', error)
+      })
       
       this.setState ({ 
         title: "",
@@ -85,17 +89,17 @@ export default class formAddProduct extends React.Component {
       })
   }
 
-  componentDidMount() {
-    var url = `http://localhost:3000/categories`
-    fetch(url, {
-      method: 'GET',
-    })
-    .then(res => res.json())
-    .then((categorias) => {
-      this.setState({categoriesML: categorias})
-    })
-    .catch(error => console.error('Error:', error))
-  }
+  // componentDidMount() {
+  //   var url = `http://localhost:3000/categories`
+  //   fetch(url, {
+  //     method: 'GET',
+  //   })
+  //   .then(res => res.json())
+  //   .then((categorias) => {
+  //     this.setState({categoriesML: categorias})
+  //   })
+  //   .catch(error => console.error('Error:', error))
+  // }
 
   handleSelect = (e) => {
   const categories = Array.from(e.target.selectedOptions).map(

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormControl, InputLabel, Input, Button } from '@material-ui/core';
 import styles from './formModificar.module.css'
+import token from '../variables'
 export default class modificarProducto extends React.Component {
     constructor(props) {
         super(props);
@@ -20,6 +21,7 @@ export default class modificarProducto extends React.Component {
         this.handleChangeImage = this.handleChangeImage.bind(this)
     }
     componentDidMount(){
+        console.log('en form produt modificar: '+token)
         console.log(this.state.idProduct)
         fetch(`https://api.mercadolibre.com/items?ids=${this.state.idProduct}`)
         .then(res => res.json())
@@ -49,7 +51,7 @@ export default class modificarProducto extends React.Component {
       const formImage = new FormData()
       formImage.append('file', e.target.files[0])
 		
-      fetch( 'https://api.mercadolibre.com/pictures/items/upload?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496', {
+      fetch( `https://api.mercadolibre.com/pictures/items/upload?access_token=${token}`, {
         method: 'post',
         body: formImage,
       })
@@ -61,6 +63,7 @@ export default class modificarProducto extends React.Component {
 			.catch( err => { console.log('error imagen '+ err)
 			})
     }
+    
     onSubmit() {
         var data = {
             available_quantity: this.state.cantidad,
@@ -69,14 +72,13 @@ export default class modificarProducto extends React.Component {
             condition: this.state.condicion
         }
 
-        console.log('el adat que voy a enviar es: '+JSON.stringify(data))
-        fetch(`https://api.mercadolibre.com/items/${this.state.idProduct}?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496`,{
+        fetch(`http://localhost:3000/products/${this.state.idProduct}/modificar`,{
             method: 'put',
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            body: data
+            body: JSON.stringify(data)
         })
         .then(res => res.json())
         .then((respuesta) => {
@@ -86,7 +88,8 @@ export default class modificarProducto extends React.Component {
       .catch(err => console.log('modificar sale por el catch '+ err))
       
       if(this.state.imagen !== ""){
-          fetch(`https://api.mercadolibre.com/items/{item_id}?access_token=APP_USR-2319781659457528-091710-bace5fa0f1615a9a5441e571140f97b7-174509496`,{
+          fetch(`http://localhost:3000/products/picture/${this.state.idProduct}/modificar`)
+          fetch(`https://api.mercadolibre.com/items/{item_id}?access_token=${token}`,{
               method: 'PUT',
               body: {
                   pictures: { source: this.state.imagen}

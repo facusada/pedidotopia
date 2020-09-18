@@ -9,7 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/styles';
 import { Button } from '@material-ui/core';
 import { Link } from 'react-router-dom'
-
+import token from '../variables'
 
 const image = {
   maxWidth: '50px',
@@ -30,30 +30,46 @@ const styles = theme => ({
         }
 
         this.delete = this.delete.bind(this);
+        this.cargaProductos = this.cargaProductos.bind(this);
     }
 
     componentDidMount() { 
-        var url = `https://api.mercadolibre.com/sites/MLA/search?seller_id=174509496`
-        fetch(url, {
-          method: 'GET',
-        })
-        .then(res => res.json())
-        .then((productos) => {
-          this.setState({prod:productos.results})
-        })
-        .catch(error => console.error('Error:', error))
-      }
+      this.cargaProductos();
+    }
 
-    delete(id) {
-      fetch(`http://localhost:3000/product/${id}`, {
-        method: 'DELETE',
+    async delete(id) {
+        const respuesta = await fetch(`http://localhost:3000/products/${id}`, {
+          method: 'DELETE',
+        })
+        if(respuesta){
+          console.log('la respuesta luego de borrar en la db es: '+respuesta)
+          console.log('ya se podria ejecutar el carga productos de nuevo al borrar')
+          await alert('Se borro el producto')
+          this.cargaProductos();
+          console.log('supuestamente se ejecuta')
+        } else {
+          alert("Error al borrar")
+        }
+      
+        // if(respuesta.error){
+        //   alert("Error al Borrar el producto!");
+        // } else {
+        //   alert("El producto ha sido borrado");
+        // }
+      // .catch(err => console.log(err)) 
+    }
+
+    cargaProductos(){
+      // var url = `https://api.mercadolibre.com/sites/MLA/search?seller_id=174509496`
+      var url = 'http://localhost:3000/products'
+      fetch(url)
+      .then(res => {
+        return res.json()
       })
-      .then(res => res.json())
-      .then((respuesta) => {
-        console.log(respuesta)
-        alert("El producto ha sido borrado exitosamente")
-      }) 
-
+      .then((productos) => {
+        this.setState({prod:productos})
+      })
+      .catch(error => console.error('Error:', error))
     }
     
     render(){
@@ -68,7 +84,6 @@ const styles = theme => ({
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Precio</TableCell>
                     <TableCell align="center">Cantidad</TableCell>
-                    <TableCell align="center">Descripción</TableCell>
                     <TableCell align="center">Image</TableCell>
                     <TableCell align="center">Modificar</TableCell>
                     <TableCell align="center">Borrar</TableCell>
@@ -78,16 +93,17 @@ const styles = theme => ({
                   {this.state.prod && this.state.prod.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell component="th" scope="row" align="center">
-                        <a href={p.permalink} target="blank">Ver articulo</a>
+                        <a href={p.linkMeli} target="blank">Ver articulo</a>
                       </TableCell>
-                      <TableCell align="center">{p.id}</TableCell>
+                      <TableCell align="center">{p.idML}</TableCell>
                       <TableCell align="center">{p.title}</TableCell>
                       <TableCell align="center">{p.price}</TableCell>
-                      <TableCell align="center">{p.available_quantity}</TableCell>
-                      <TableCell align="center">{p.description}</TableCell>
+                      <TableCell align="center">{p.quantity}</TableCell>
                       <TableCell align="center">                   
-                        <img src={p.thumbnail} style={image} alt=""/>
+                        <img src={p.images} style={image} alt=""/>
                       </TableCell>
+
+                      
                       <TableCell align="center"> 
                         <Link to={`/product/modificar/${p.id}`}> 
                           <Button variant="contained" size="small" color="primary" >
@@ -100,6 +116,7 @@ const styles = theme => ({
                           Borrar
                         </Button>
                       </TableCell>
+                      
                     </TableRow>
                   ))}
                 </TableBody>

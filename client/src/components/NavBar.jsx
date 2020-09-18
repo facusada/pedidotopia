@@ -27,8 +27,7 @@ export default function NavBar() {
       return (
         <AppBar position="static">
             <Toolbar>
-            <div>    
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenu}>
+            {/* <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenu}>
                 <MenuIcon/>
                 <Menu 
                     id="menu-appbar"
@@ -39,16 +38,17 @@ export default function NavBar() {
                     }}
                     open={open}
                     onClose={handleClose}
-                >
+                > */}
+                <div className="d-flex flex-column">
                     <Link to='/addProduct'>
-                        <MenuItem >Agregar Producto</MenuItem>
+                    <button type="button" className="btn btn-link text-white">Agregar Producto</button>
                     </Link>
                     <Link to='/list'>
-                        <MenuItem >Lista de Productos</MenuItem>   
+                    <button type="button" className="btn btn-link text-white">Lista Productos</button>
                     </Link>
-                </Menu>
-            </IconButton>
-            </div>
+                </div>
+                {/* </Menu>
+            </IconButton> */}
                 <Typography variant="h6" className={classes.title}>
                 PedidoTopia
                 </Typography>
